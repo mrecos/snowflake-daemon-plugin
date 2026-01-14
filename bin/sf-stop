@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+"""Stop the Snowflake daemon gracefully."""
+import sys
+import os
+
+# Add project root to path
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, project_root)
+
+from daemon.client import DaemonClient
+
+client = DaemonClient()
+
+# Check if daemon is running
+if not client.is_running():
+    print("Daemon is not running")
+    sys.exit(0)
+
+# Stop the daemon
+print("Stopping Snowflake daemon...")
+result = client.stop_daemon()
+
+if result.get("status") == "shutting down":
+    print("✓ Daemon shutdown initiated")
+    print("\nThe daemon will:")
+    print("  - Close Snowflake connection")
+    print("  - Release resources")
+    print("  - Auto-restart on next query")
+elif result.get("status") == "not_running":
+    print("✓ Daemon is not running")
+elif result.get("status") == "error":
+    print(f"❌ Error stopping daemon: {result.get('error')}")
+    sys.exit(1)
+else:
+    print(f"✓ Daemon stopped")

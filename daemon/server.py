@@ -4,6 +4,8 @@ from daemon.connection import SnowflakeConnection
 from daemon.executor import QueryExecutor
 from daemon.state import StateManager, SessionState
 import time
+import os
+import signal
 
 app = FastAPI(title="Snowflake Daemon")
 start_time = time.time()
@@ -51,6 +53,24 @@ async def execute_query(request: QueryRequest) -> QueryResponse:
 async def get_state() -> SessionState:
     """Get current session state (database, schema, warehouse, role)."""
     return state_manager.get_state()
+
+
+@app.post("/shutdown")
+async def shutdown():
+    """Gracefully shutdown the daemon."""
+    # Close Snowflake connection
+    if connection_available and connection:
+        connection.close()
+
+    # Schedule shutdown signal (delayed to allow response to be sent)
+    def trigger_shutdown():
+        time.sleep(0.5)  # Give time for response to be sent
+        os.kill(os.getpid(), signal.SIGTERM)
+
+    import threading
+    threading.Thread(target=trigger_shutdown, daemon=True).start()
+
+    return {"status": "shutting down"}
 
 
 # Entry point for manual testing

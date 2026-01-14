@@ -130,6 +130,50 @@ id | name
 
 **Note:** Write operations (INSERT, UPDATE, DELETE, CREATE, DROP) are blocked for safety.
 
+### Check Session Context
+
+```bash
+./bin/sf-context
+```
+
+Display current session state (database, schema, warehouse, role).
+
+**Example output:**
+```
+Current Snowflake Session Context:
+  Database:  CLAUDE_DB
+  Schema:    PUBLIC
+  Warehouse: COMPUTE_WH
+  Role:      ACCOUNTADMIN
+```
+
+### Stop Daemon
+
+```bash
+./bin/sf-stop
+```
+
+Gracefully stop the daemon and close the Snowflake connection.
+
+**Use cases:**
+- Load new code changes (daemon restarts with updated code)
+- Free resources when not actively querying
+- Force new connection on next query
+- Reset daemon state
+
+**Example output:**
+```
+Stopping Snowflake daemon...
+✓ Daemon shutdown initiated
+
+The daemon will:
+  - Close Snowflake connection
+  - Release resources
+  - Auto-restart on next query
+```
+
+The daemon will automatically restart on the next query command.
+
 ### Command Features
 
 - **Auto-start**: Daemon starts automatically on first command use
@@ -172,17 +216,25 @@ This project is currently in **Phase 1: Foundation**.
   - [x] 17 comprehensive unit tests for client
   - [x] 95% overall code coverage
 
+- [x] **Phase 2, Milestone 2.1: Session State Management**
+  - [x] StateManager class for tracking session context
+  - [x] USE command support (DATABASE, SCHEMA, WAREHOUSE, ROLE)
+  - [x] `/snowflake-daemon:sf-context` - Display current context
+  - [x] `/snowflake-daemon:sf-stop` - Graceful daemon shutdown
+  - [x] Auto-reconnect on authentication token expiry
+  - [x] 18 comprehensive unit tests for state manager
+  - [x] 86% overall code coverage
+
 ### Test Results
 
 ```
-✅ 56 total tests passing
-✅ 95% code coverage (169/178 statements)
-✅ Ready for production use with read-only queries
+✅ 74 total tests passing
+✅ 86% code coverage
+✅ Production-ready with read-only queries and session management
 ```
 
 ### Next Steps
 
-- [ ] Phase 2: Session Management (USE commands, state persistence)
 - [ ] Phase 3: Connection Pool & Reliability
 - [ ] Phase 4: Write Operations & Transactions
 - [ ] Phase 5: Polish & Production Readiness
@@ -232,10 +284,18 @@ snowflake-daemon-plugin/
 │   ├── models.py            # Pydantic request/response models
 │   ├── connection.py        # Snowflake connection manager
 │   ├── executor.py          # Query executor with validation
+│   ├── state.py             # Session state manager
 │   └── client.py            # HTTP client for daemon communication
 ├── commands/
 │   ├── sf-connect.md        # Connection test command
-│   └── sf-query.md          # Query execution command
+│   ├── sf-query.md          # Query execution command
+│   ├── sf-context.md        # Session context command
+│   └── sf-stop.md           # Daemon shutdown command
+├── bin/
+│   ├── sf-connect           # Executable: test connection
+│   ├── sf-query             # Executable: execute queries
+│   ├── sf-context           # Executable: show session state
+│   └── sf-stop              # Executable: stop daemon
 ├── tests/
 │   ├── __init__.py
 │   ├── test_daemon.py       # Daemon/server tests

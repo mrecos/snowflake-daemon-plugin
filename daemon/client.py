@@ -99,8 +99,13 @@ class DaemonClient:
                 "error": str(e)
             }
 
-    def stop_daemon(self) -> bool:
+    def stop_daemon(self) -> Dict[str, Any]:
         """Stop the daemon (graceful shutdown)."""
-        # For now, this is a placeholder
-        # In Phase 5, we'll add a proper shutdown endpoint
-        return True
+        if not self.is_running():
+            return {"status": "not_running", "message": "Daemon is not running"}
+
+        try:
+            response = httpx.post(f"{self.base_url}/shutdown", timeout=5.0)
+            return response.json()
+        except Exception as e:
+            return {"status": "error", "error": str(e)}
