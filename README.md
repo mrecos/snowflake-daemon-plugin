@@ -1,4 +1,4 @@
-# Snowflake Daemon Plugin
+# Snowflake Claude-Code Plugin (Not an official product of Snowflake or Anthropic)
 
 ![Snowflake Daemon Plugin banner](img/banner1.png)
 
