@@ -62,21 +62,44 @@ This project is currently in **Phase 1: Foundation**.
 
 ### Completed Milestones
 
-- [x] Phase 1, Milestone 1.1: Project Setup
+- [x] **Phase 1, Milestone 1.1: Project Setup**
   - [x] FastAPI server starts on localhost:8765
   - [x] `/health` endpoint returns 200
   - [x] `/query` endpoint accepts requests
   - [x] Unit tests structure in place
 
+- [x] **Phase 1, Milestone 1.2: Connection Manager**
+  - [x] SnowflakeConnection class with PAT authentication
+  - [x] Connection validation and health checks
+  - [x] 13 comprehensive unit tests
+  - [x] 100% code coverage on connection module
+
+- [x] **Phase 1, Milestone 1.3: Basic Query Execution**
+  - [x] QueryExecutor with read-only query validation
+  - [x] Automatic LIMIT clause addition for SELECT queries
+  - [x] Structured query results with columns and metadata
+  - [x] 24 comprehensive unit tests
+  - [x] 93% overall code coverage
+
+### Test Results
+
+```
+✅ 39 total tests passing
+✅ 93% code coverage (123/131 statements)
+✅ Ready for integration testing with real Snowflake
+```
+
 ### Next Steps
 
-- [ ] Phase 1, Milestone 1.2: Connection Manager
-- [ ] Phase 1, Milestone 1.3: Basic Query Execution
 - [ ] Phase 1, Milestone 1.4: Plugin Commands
+- [ ] Phase 2: Session Management (USE commands, state persistence)
+- [ ] Phase 3: Connection Pool & Reliability
 
 See [HANDOFF.md](HANDOFF.md) for the complete implementation plan.
 
 ## Testing
+
+### Unit Tests
 
 Run the test suite:
 
@@ -90,19 +113,20 @@ Run with coverage:
 pytest tests/ -v --cov=daemon --cov-report=html
 ```
 
-## Manual Testing
+### Integration Testing with Real Snowflake
 
-Start the daemon manually:
+To test the daemon with a real Snowflake connection, see the comprehensive guide:
 
-```bash
-python -m uvicorn daemon.server:app --host 127.0.0.1 --port 8765
-```
+**[INTEGRATION_TEST.md](INTEGRATION_TEST.md)** - Complete integration testing guide
 
-Test the health endpoint:
+Quick start:
 
-```bash
-curl http://127.0.0.1:8765/health
-```
+1. Configure `.env` with your Snowflake credentials
+2. Start the daemon: `python -m uvicorn daemon.server:app --host 127.0.0.1 --port 8765`
+3. Test health: `curl http://127.0.0.1:8765/health`
+4. Test a query: `curl -X POST http://127.0.0.1:8765/query -H "Content-Type: application/json" -d '{"sql": "SELECT 1"}'`
+
+See [INTEGRATION_TEST.md](INTEGRATION_TEST.md) for detailed testing instructions.
 
 ## Project Structure
 
@@ -112,17 +136,22 @@ snowflake-daemon-plugin/
 │   └── plugin.json          # Plugin manifest
 ├── daemon/
 │   ├── __init__.py
-│   ├── server.py            # FastAPI server
-│   └── models.py            # Pydantic models
+│   ├── server.py            # FastAPI server with endpoints
+│   ├── models.py            # Pydantic request/response models
+│   ├── connection.py        # Snowflake connection manager
+│   └── executor.py          # Query executor with validation
 ├── commands/                # Plugin commands (TBD)
 ├── tests/
 │   ├── __init__.py
-│   └── test_daemon.py       # Unit tests
+│   ├── test_daemon.py       # Daemon/server tests
+│   ├── test_connection.py   # Connection manager tests
+│   └── test_executor.py     # Query executor tests
 ├── .env.example             # Configuration template
 ├── .gitignore
 ├── requirements.txt         # Production dependencies
 ├── requirements-dev.txt     # Development dependencies
 ├── HANDOFF.md              # Implementation guide
+├── INTEGRATION_TEST.md     # Integration testing guide
 └── README.md               # This file
 ```
 
