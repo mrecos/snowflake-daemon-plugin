@@ -3,6 +3,7 @@ from daemon.connection import SnowflakeConnection
 from daemon.models import QueryResponse
 from daemon.state import StateManager
 from daemon.validators import BaseValidator, ReadOnlyValidator
+from daemon.errors import enhance_error_message, is_retriable_error
 import time
 
 
@@ -100,11 +101,12 @@ class QueryExecutor:
                     self.connection.force_reconnect()
                     continue
 
-                # Otherwise, return error
+                # Otherwise, return enhanced error
                 execution_time = time.time() - start_time
+                enhanced_error = enhance_error_message(str(e), sql)
                 return QueryResponse(
                     success=False,
-                    error=str(e),
+                    error=enhanced_error,
                     execution_time=execution_time
                 )
 

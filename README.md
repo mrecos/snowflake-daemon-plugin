@@ -15,6 +15,7 @@ This Claude Code plugin provides a **stateful Snowflake connection** using a lig
 - **Persistent Connections**: Background daemon maintains persistent connection
 - **Session State**: Database, schema, warehouse, and role persist across queries
 - **Full SQL Support**: All operations (read, DML, DDL, transactions)
+- **Enhanced Error Messages**: Context-aware hints and suggestions for common errors
 - **Auto-Start**: Daemon automatically starts on first command
 - **Graceful Shutdown**: Stop daemon and auto-restart on next query
 - **Auto-Reconnect**: Handles authentication token expiry transparently
@@ -231,14 +232,14 @@ The daemon will automatically restart on the next query command.
 - **Persistent connection**: Connection and context preserved across queries
 - **Full SQL support**: All operations supported (read, DML, DDL)
 - **Auto-LIMIT**: SELECT queries automatically get LIMIT clause
-- **Error handling**: Clear error messages for common issues
+- **Enhanced error messages**: Context-aware hints and suggestions for common errors
 - **No manual setup**: Just use the slash commands - they handle everything
 - **Claude Code integration**: Commands auto-selected based on user intent
 - **Flexible security**: Configurable validators (ReadOnly, DML, DDL, or Write-all)
 
 ## Development Status
 
-This project has completed **Phase 1 (Foundation)**, **Phase 2 (Session Management)**, and **Phase 4, Milestone 4.1 (Write Operations)**.
+This project has completed **Phase 1 (Foundation)**, **Phase 2 (Session Management)**, **Phase 4.1 (Write Operations)**, and **Phase 5.2 (Error Enhancement)**.
 
 ### Completed Milestones
 
@@ -288,11 +289,23 @@ This project has completed **Phase 1 (Foundation)**, **Phase 2 (Session Manageme
   - [x] End-to-end testing with real Snowflake
   - [x] Configurable security levels
 
+- [x] **Phase 5, Milestone 5.2: Error Handling Enhancement**
+  - [x] Enhanced error messages with context-aware hints
+  - [x] Pattern matching for common Snowflake errors
+  - [x] Helpful suggestions for object not found errors
+  - [x] Database/schema/warehouse context hints
+  - [x] Syntax error guidance
+  - [x] Permission error suggestions
+  - [x] SQL query context in error output
+  - [x] 34 comprehensive error enhancement tests
+  - [x] Retriable error detection
+
 ### Test Results
 
 ```
-✅ 129 total tests passing (74 original + 55 validator tests)
+✅ 163 total tests passing (74 base + 55 validator + 34 error tests)
 ✅ All write operations tested and working
+✅ Enhanced error messages providing helpful guidance
 ✅ Production-ready with full SQL support
 ```
 

@@ -266,7 +266,8 @@ class TestErrorHandling:
         response = await executor.execute("SELECT 1")
 
         assert response.success is False
-        assert response.error == "Connection failed"
+        # Error message is now enhanced, so check it contains the original error
+        assert "Connection failed" in response.error
         assert response.execution_time is not None
 
     @pytest.mark.asyncio
